@@ -1,2 +1,2 @@
-# Robotic-Arm
+# Myoelectric-Controlled Robotic Arm for Surgical Instrument Sterilization with Sensor-Driven Actuation
 Programmed a robotic arm that uses sensing and actuation for transferring a surgical instrument to an autoclave for sterilization. Designed a program in Python that interfaces with Q-Labs using two muscle sensor emulators. A Myoelectric sensor was implemented into the program to differentiate between the different coloured bins, to open and close the autoclave bin and to move the arm to the desired location at will.
