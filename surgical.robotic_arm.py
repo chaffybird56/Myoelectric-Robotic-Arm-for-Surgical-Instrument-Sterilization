@@ -1,4 +1,3 @@
-#By: Ahmed(Ibrahim) Sahi and Ahmad Choudhry. We worked on the program in collaboration.
 
 # random container is spawned
 import time
@@ -159,3 +158,4 @@ while True:
     elif right > thresh and left > thresh:
         move_arm()
         time.sleep(2)
+
