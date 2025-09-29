@@ -1,8 +1,11 @@
 # 🦾 Myoelectric Robotic Arm for Surgical Instrument Sterilization
 
 ## 🎬 Demo
+<div align="center">
+
 https://github.com/user-attachments/assets/dcc49717-62b0-4c19-89aa-dea88fd53750
 
+</div>
 ---
 
 ## ⚡ Quick overview (start to finish)
