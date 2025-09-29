@@ -1,94 +1,86 @@
 # 🦾 Myoelectric Robotic Arm for Surgical Instrument Sterilization
 
-<!-- Intro video placeholder -->
-
+## 🎬 Demo
 https://github.com/user-attachments/assets/dcc49717-62b0-4c19-89aa-dea88fd53750
 
 ---
 
 ## 🎯 Project Overview
 
-The aim of this project was to demonstrate how **surface electromyography (EMG)** can be harnessed to control a robotic arm for **sterile transfer of surgical instruments**.  
+This project demonstrates how **surface electromyography (EMG)** can control a robotic arm for **sterile transfer of surgical instruments**.
 
-A **Quanser QArm** was connected to EMG sensors worn by an operator. By flexing or relaxing specific muscles, the operator could issue commands such as:
+A **Quanser QArm** was linked to EMG sensors worn by an operator. By contracting and relaxing specific muscles, the operator issues:
+- Staging‑bin selection
+- Gripper open/close
+- Autoclave door toggle
+- Start/abort of the transfer sequence
 
-- Selecting a staging bin.  
-- Opening or closing the gripper.  
-- Operating the autoclave door.  
-- Triggering the overall sterilization cycle.  
-
-In simple terms: **muscle signals are translated into robot motions**. The end result is a semi‑autonomous workflow that transfers surgical tools from their bins into an autoclave for sterilization, with the human providing intuitive, muscle‑driven control.
+In short, **muscle signals are mapped to robot actions** to complete a pick–place sterilization workflow.
 
 ---
 
 ## 🧬 How it Works
 
-### 1. EMG Signal Processing
+### 1) EMG signal processing
 
-Two EMG channels \(e_1(t), e_2(t)\) are continuously sampled. Each channel is normalized and compared against thresholds:
-
-$$
-\tilde{e}_i(t) = \frac{e_i(t) - \mu_i}{\sigma_i}, \quad i \in \{1,2\}
-$$
-
-where \(\mu_i, \sigma_i\) are baseline mean and standard deviation.  
-A contraction is detected when:
+Two channels \(e_1(t), e_2(t)\) are sampled, normalized, and thresholded.
 
 $$
-\tilde{e}_i(t) > \theta_{\text{on}}, \qquad
-\tilde{e}_i(t) < \theta_{\text{off}} \;\; \text{(release)}
+\tilde e_i(t) = \frac{e_i(t) - \mu_i}{\sigma_i},\quad i \in \{1,2\}.
 $$
 
-with hysteresis (\(\theta_{\text{on}} > \theta_{\text{off}}\)) to avoid flicker.  
+A contraction is detected when
 
-- Channel 1 contraction → **selection / start**.  
-- Channel 2 contraction → **grip / release**.  
-- Both channels together → **toggle autoclave door**.  
+$$
+\tilde e_i(t) > \theta_{\text{on}},\qquad \tilde e_i(t) < \theta_{\text{off}}\;\text{ (release)}.
+$$
 
-### 2. State Machine Control
+Hysteresis (placed on its own line to render cleanly):
 
-A **finite‑state machine (FSM)** ensures safety and predictability:
+$$
+\theta_{\text{on}} > \theta_{\text{off}}.
+$$
 
-\`\`\`
+Mapping used here:
+- Channel 1 → **select / start**
+- Channel 2 → **grip / release**
+- Both channels together → **toggle autoclave door**
+- Sustained Channel 2 → **abort**
+
+### 2) Sterilization sequence control (gesture‑driven)
+
+```
 IDLE → SELECT_BIN → APPROACH → GRIP → LIFT → TRANSIT
      → OPEN_AUTOCLAVE → PLACE → CLOSE_AUTOCLAVE → HOME
-\`\`\`
+```
 
-Each transition requires both the correct EMG intent **and** successful completion of the previous motion.
+Each step advances only when the required gesture is observed **and** the previous motion completes.
 
-### 3. Motion Primitives
+### 3) Motion primitives
 
-- **Waypoints** define safe poses for bins (R, G, B), the autoclave, and home position.  
-- **Primitives** such as `move_to()`, `grip()`, `open_door()` are composed into the sterilization sequence.  
-- Timing and speeds are tuned to prevent collisions and ensure smooth transfers.
+`move_to(·)`, `grip(open/close)`, and `toggle_door()` operate on predefined **waypoints** for bins (R/G/B), autoclave, and home. Speeds and dwell times are tuned to avoid collisions and ensure smoothness.
 
 ---
 
 ## 🧪 Results
 
-- **Reliable pick/place** of mock instruments from bins to autoclave.  
-- **Abort gesture** (sustained contraction) returns QArm to home safely.  
-- System tested in both **simulation (QLabs)** and **hardware**.  
-- Clear demonstration of EMG as an intuitive, hands‑free control interface for surgical workflows.
+- Reliable pick/place of mock instruments into the autoclave (simulation and hardware).  
+- **Abort** gesture returns the arm safely to **home**.  
+- Demonstrates EMG as a hands‑free control channel for sterile operations.
 
 ---
 
 ## ⚖️ Limitations
 
-- EMG signals are inherently noisy — required filtering and debounce logic.  
-- Autoclave actuation was simulated (time delay) rather than using a physical mechanism.  
-- Gesture set is simple; adding more intents would need additional channels or better pattern recognition.
+- EMG noise requires filtering, debounce, and hysteresis.  
+- Autoclave actuation is simulated (timed delay) in this prototype.  
+- Gesture vocabulary is minimal; extension would need more channels or classifier‑based recognition.
 
 ---
 
 ## 🧠 Glossary
 
-- **EMG** — Surface electromyography signal from muscle activity.  
-- **FSM** — Finite‑State Machine (explicit state transitions).  
-- **QArm** — Quanser 4‑DOF robotic arm used in lab experiments.  
-- **QLabs** — Quanser virtual environment mirroring hardware.  
-- **Waypoint** — Predefined 3D target position for the end effector.  
-- **Pose** — Position + orientation of the robotic gripper.  
+**EMG** — surface electromyography • **Sequence control** — gesture‑triggered stepwise motions • **QArm** — Quanser 4‑DOF arm • **QLabs** — Quanser simulation • **Waypoint** — predefined pose • **Pose** — position + orientation.
 
 ---
 
@@ -98,12 +90,6 @@ MIT — see `LICENSE`.
 
 ---
 
-## 🔧 Code Notes
+## 🔧 Code
 
-The repository contains the original Python controller script. A refactored version (`surgical.robotic_arm.refactored.py`) is included, featuring:
-
-- Modular motion primitives.  
-- Clear EMG → intent mapping.  
-- Explicit FSM implementation.  
-- Centralized constants for thresholds, waypoints, and speeds.
-
+See `surgical.robotic_arm.refactored.py` for the cleaned controller with gesture decoding, sequence control, motion primitives, and centralized constants.
