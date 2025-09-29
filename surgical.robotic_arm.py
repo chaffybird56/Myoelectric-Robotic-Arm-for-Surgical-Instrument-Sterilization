@@ -1,7 +1,6 @@
 """
-surgical.robotic_arm.refactored.py
 ----------------------------------
-Refactored, documented controller for the myoelectric-driven sterilization task.
+Documented controller for the myoelectric-driven sterilization task.
 - Two-channel EMG → intents (with hysteresis, debounce, cooldown)
 - Finite-state machine (FSM) for safe, deterministic motions
 - Modular motion primitives and centralized constants
